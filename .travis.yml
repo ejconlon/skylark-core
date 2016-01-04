@@ -2,25 +2,32 @@ sudo: false
 
 language: c
 
+cache:
+  apt: true
+  directories:
+    - $HOME/.stack/
+
 addons:
   apt:
     packages:
     - libgmp-dev
 
-cache:
-  directories:
-    - $HOME/.stack/
-
 before_install:
+  # Install stack
   - mkdir -p ~/.local/bin
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  # Install libstatgrab
+  - travis_retry wget http://dl.ambiweb.de/mirrors/ftp.i-scream.org/libstatgrab/libstatgrab-0.90.tar.gz
+  - tar xvf libstatgrab-0.90.tar.gz && cd libstatgrab-0.90/
+  - ./configure --prefix=$TRAVIS_BUILD_DIR/.local/ && make && make install
+  - cd ../
 
 install:
   - stack update
   - stack setup
   - stack install hlint hpc-coveralls codecov-haskell
-  - stack build skylark-core --only-dependencies
+  - stack build skylark-core --only-dependencies --extra-include-dirs=$TRAVIS_BUILD_DIR/.local/include --extra-lib-dirs=$TRAVIS_BUILD_DIR/.local/lib
 
 script:
   - ./lint.sh

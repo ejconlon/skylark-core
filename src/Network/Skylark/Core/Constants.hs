@@ -16,5 +16,13 @@ awsAccessKey = "AWS_ACCESS_KEY_ID"
 awsSecretKey :: Text
 awsSecretKey = "AWS_SECRET_ACCESS_KEY"
 
+jitterRate :: Double
+jitterRate = 0.15
+
+-- Default interval (in microseconds) between healthchecks.
+--
+healthCheckInterval :: Int
+healthCheckInterval = 5 * 1000000
+
 infoFile :: String
 infoFile = "conf/info.yaml"
